@@ -1,11 +1,13 @@
 package com.taskapp.logic;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.taskapp.dataaccess.LogDataAccess;
 import com.taskapp.dataaccess.TaskDataAccess;
 import com.taskapp.dataaccess.UserDataAccess;
 import com.taskapp.exception.AppException;
+import com.taskapp.model.Log;
 import com.taskapp.model.Task;
 import com.taskapp.model.User;
 
@@ -46,11 +48,11 @@ public class TaskLogic {
         // 取得したデータを表示する
         tasks.forEach(task -> {
             String status = " ";
-            if (task.getCode() == 0) {
+            if (task.getStatus() == 0) {
                 status = "未着手";
-            } else if (task.getCode() == 1) {
+            } else if (task.getStatus() == 1) {
                 status = "着手中";
-            } else if (task.getCode() == 2) {
+            } else if (task.getStatus() == 2) {
                 status = "完了";
             }
 
@@ -59,7 +61,7 @@ public class TaskLogic {
             if (task.getRepUser().getCode() == loginUser.getCode()) {
                 staffInfo = "あなたが担当しています";
             } else {
-                staffInfo = task.getRepUser().getCode() + "が担当しています";
+                staffInfo = task.getRepUser().getName() + "が担当しています";
             }
 
             System.out.println(task.getCode() + "." + "タスク名：" + task.getName() +
@@ -82,15 +84,19 @@ public class TaskLogic {
      */
     public void save(int code, String name, int repUserCode,
                     User loginUser) throws AppException {
+        
+        User repUser = userDataAccess.findByCode(repUserCode);
+            if (repUser == null) {
+                throw new AppException("存在するユーザーコードを入力してください");
+            }
 
-        // if (!userDataAccess.isUserCodeExist(userCode)) {
-        //     throw new AppException("存在するユーザーコードを入力してください");
-        // }
 
         // 入力値をTaskオブジェクトにマッピング
         Task task = new Task(code, name, repUserCode, loginUser);
         // saveメソッドを呼び出して、入力されたデータを保存
         taskDataAccess.save(task);
+        System.out.println(task.getName() + "の登録が完了しました");
+
     }
 
     /**
@@ -104,9 +110,18 @@ public class TaskLogic {
      * @param loginUser ログインユーザー
      * @throws AppException タスクコードが存在しない、またはステータスが前のステータスより1つ先でない場合にスローされます
      */
-    // public void changeStatus(int code, int status,
-    //                         User loginUser) throws AppException {
-    // }
+    public void changeStatus(int code, int status,
+                            User loginUser) throws AppException {
+
+        Task existingTask = taskDataAccess.findByCode(code);
+        if (existingTask == null) {
+            throw new AppException("存在するタスクコードを入力してください");
+        }
+        // 入力値をオブジェクトにマッピング
+        Task updatedTask = new Task(code, existingTask.getName(), status, loginUser);
+
+        taskDataAccess.update(updatedTask);
+    }
 
     /**
      * タスクを削除します。

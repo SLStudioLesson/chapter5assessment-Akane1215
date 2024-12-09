@@ -63,9 +63,11 @@ public class TaskUI {
 
                 switch (selectMenu) {
                     case "1":
+                        // タスク一覧表示
                         taskLogic.showAll(loginUser);
                         break;
                     case "2":
+                        inputNewInformation();
                         break;
                     case "3":
                         System.out.println("ログアウトしました。");
@@ -123,7 +125,7 @@ public class TaskUI {
                 // 登録に必要な入力値を求める
                 System.out.print("タスクコードを入力してください：");
                 String code = reader.readLine();
-                if (!isNumber(code)) {
+                if (!isNumeric(code)) {
                     System.out.println("コードは半角の整数で入力してください。");
                     System.out.println();
                     continue;
@@ -138,25 +140,26 @@ public class TaskUI {
                     continue;
                 }
 
-                System.out.print("ユーザーコードを入力してください：");
+                System.out.print("担当するユーザーコードを入力してください：");
                 String repUserCode = reader.readLine();
-                if (!isNumber(repUserCode)) {
+                if (!isNumeric(repUserCode)) {
                     System.out.println("ユーザーコードは半角の整数で入力してください。");
                     System.out.println();
                     continue;
                 }
+
+                int userCode = Integer.parseInt(repUserCode);
+                
                 // 新規登録処理を実行
-                // taskLogic.save(Integer.parseInt(code), name, Integer.parseInt(repUserCode));
-                // flg = false;
+                taskLogic.save(Integer.parseInt(code), name, userCode, loginUser);
+                flg = false;
+
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    // 数値かどうか判定する
-    private static boolean isNumber(String inputText) {
-        return inputText.chars().allMatch(c -> Character.isDigit((char) c));
     }
 
     /**
@@ -165,8 +168,35 @@ public class TaskUI {
      * @see #inputChangeInformation()
      * @see #inputDeleteInformation()
      */
-    // public void selectSubMenu() {
-    // }
+    public void selectSubMenu() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                System.out.println("以下1~2から好きな選択肢を選んでください。");
+                System.out.println("1. タスクのステータス変更, 2. メインメニューに戻る");
+                System.out.print("選択肢：");
+                String selectMenu = reader.readLine();
+                System.out.println();
+
+                switch (selectMenu) {
+                    case "1":
+                        inputChangeInformation();
+                        break;
+                    case "2":
+                        System.out.println("メインメニューに戻ります");
+                        flg = false;
+                        break;
+                    default:
+                        System.out.println("選択肢が誤っています。1~3の中から選択してください。");
+                        break;
+                }
+                System.out.println();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 
     /**
      * ユーザーからのタスクステータス変更情報を受け取り、タスクのステータスを変更します。
@@ -174,8 +204,47 @@ public class TaskUI {
      * @see #isNumeric(String)
      * @see com.taskapp.logic.TaskLogic#changeStatus(int, int, User)
      */
-    // public void inputChangeInformation() {
-    // }
+    public void inputChangeInformation() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                System.out.print("ステータスを変更するタスクコードを入力してください：");
+                String inputCode = reader.readLine();
+                if (!isNumeric(inputCode)) {
+                    System.out.println("コードは半角の整数で入力してください。");
+                    System.out.println();
+                    continue;
+                }
+                int code = Integer.parseInt(inputCode);
+
+                System.out.println("どのステータスに変更するか選択してください。");
+                System.out.println("1. 着手中, 2. 完了");
+                System.out.print("選択肢：");
+                String inputStatus = reader.readLine();
+                if (!isNumeric(inputStatus)) {
+                    System.out.println("ステータスは半角の整数で入力してください。");
+                    System.out.println();
+                    continue;
+                }
+                int status = Integer.parseInt(inputStatus);
+
+                if (status != 1 && status != 2) {
+                    System.out.println("ステータスは1・2の中から選択してください");
+                    System.out.println();
+                    continue;
+                }
+
+                // 編集処理を実行
+                taskLogic.changeStatus(code, status, loginUser);
+                flg = false;
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * ユーザーからのタスク削除情報を受け取り、タスクを削除します。
@@ -193,7 +262,7 @@ public class TaskUI {
      * @param inputText 判定する文字列
      * @return 数値であればtrue、そうでなければfalse
      */
-    // public boolean isNumeric(String inputText) {
-    //     return false;
-    // }
+    public boolean isNumeric(String inputText) {
+        return inputText.chars().allMatch(c -> Character.isDigit((char) c));
+    }
 }
