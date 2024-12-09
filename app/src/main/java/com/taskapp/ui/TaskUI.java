@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.taskapp.exception.AppException;
 import com.taskapp.logic.TaskLogic;
 import com.taskapp.logic.UserLogic;
 import com.taskapp.model.User;
@@ -46,6 +47,9 @@ public class TaskUI {
     public void displayMenu() {
         System.out.println("タスク管理アプリケーションにようこそ!!");
 
+        // ログイン処理を呼び出す
+        inputLogin();
+
         // メインメニュー
         boolean flg = true;
         while (flg) {
@@ -59,6 +63,7 @@ public class TaskUI {
 
                 switch (selectMenu) {
                     case "1":
+                        taskLogic.showAll(loginUser);
                         break;
                     case "2":
                         break;
@@ -82,8 +87,28 @@ public class TaskUI {
      *
      * @see com.taskapp.logic.UserLogic#login(String, String)
      */
-    // public void inputLogin() {
-    // }
+    public void inputLogin() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                System.out.print("メールアドレスを入力してください：");
+                String email = reader.readLine();
+
+                System.out.print("パスワードを入力してください：");
+                String password = reader.readLine();
+
+                // ログイン処理を呼び出す
+                loginUser = userLogic.login(email, password);
+                System.out.println();
+                flg = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * ユーザーからの新規タスク情報を受け取り、新規タスクを登録します。
@@ -91,8 +116,48 @@ public class TaskUI {
      * @see #isNumeric(String)
      * @see com.taskapp.logic.TaskLogic#save(int, String, int, User)
      */
-    // public void inputNewInformation() {
-    // }
+    public void inputNewInformation() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                // 登録に必要な入力値を求める
+                System.out.print("タスクコードを入力してください：");
+                String code = reader.readLine();
+                if (!isNumber(code)) {
+                    System.out.println("コードは半角の整数で入力してください。");
+                    System.out.println();
+                    continue;
+                }
+
+                System.out.print("タスク名を入力してください：");
+                String name = reader.readLine();
+                // 商品名は10文字以内かチェックする
+                if (!(name.length() <= 10)) {
+                    System.out.println("タスク名は10文字以内で入力してください");
+                    System.out.println();
+                    continue;
+                }
+
+                System.out.print("ユーザーコードを入力してください：");
+                String repUserCode = reader.readLine();
+                if (!isNumber(repUserCode)) {
+                    System.out.println("ユーザーコードは半角の整数で入力してください。");
+                    System.out.println();
+                    continue;
+                }
+                // 新規登録処理を実行
+                // taskLogic.save(Integer.parseInt(code), name, Integer.parseInt(repUserCode));
+                // flg = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 数値かどうか判定する
+    private static boolean isNumber(String inputText) {
+        return inputText.chars().allMatch(c -> Character.isDigit((char) c));
+    }
 
     /**
      * タスクのステータス変更または削除を選択するサブメニューを表示します。
