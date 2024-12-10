@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import com.taskapp.exception.AppException;
 import com.taskapp.logic.TaskLogic;
 import com.taskapp.logic.UserLogic;
+
 import com.taskapp.model.User;
 
 public class TaskUI {
@@ -26,6 +27,7 @@ public class TaskUI {
 
     /**
      * 自動採点用に必要なコンストラクタのため、皆さんはこのコンストラクタを利用・削除はしないでください
+     *
      * @param reader
      * @param userLogic
      * @param taskLogic
@@ -65,6 +67,7 @@ public class TaskUI {
                     case "1":
                         // タスク一覧表示
                         taskLogic.showAll(loginUser);
+                        selectSubMenu();
                         break;
                     case "2":
                         inputNewInformation();
@@ -149,7 +152,7 @@ public class TaskUI {
                 }
 
                 int userCode = Integer.parseInt(repUserCode);
-                
+
                 // 新規登録処理を実行
                 taskLogic.save(Integer.parseInt(code), name, userCode, loginUser);
                 flg = false;
@@ -237,6 +240,7 @@ public class TaskUI {
                 // 編集処理を実行
                 taskLogic.changeStatus(code, status, loginUser);
                 flg = false;
+
             } catch (AppException e) {
                 System.out.println(e.getMessage());
             } catch (IOException e) {
@@ -253,7 +257,7 @@ public class TaskUI {
      * @see com.taskapp.logic.TaskLogic#delete(int)
      */
     // public void inputDeleteInformation() {
-    // }
+    //
 
     /**
      * 指定された文字列が数値であるかどうかを判定します。

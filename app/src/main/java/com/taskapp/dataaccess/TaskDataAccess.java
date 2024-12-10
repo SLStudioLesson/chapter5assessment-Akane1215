@@ -47,7 +47,7 @@ public class TaskDataAccess {
                 String[] values = line.split(",");
 
                 // CSVに間違いがあったらスキップする
-                if (values.length != 7) {
+                if (values.length != 4) {
                     continue;
                 }
 
@@ -57,10 +57,7 @@ public class TaskDataAccess {
 
                 // Userオブジェクトを作成
                 int repUserCode = Integer.parseInt(values[3]);
-                String repUserName =values[4];
-                String repUserEmail = values[5];
-                String repUserPassword = values[6];
-                User repUser = new User(repUserCode, repUserName, repUserEmail, repUserPassword);
+                User repUser = userDataAccess.findByCode(repUserCode);
 
                 // Taskオブジェクトにマッピング
                 Task task = new Task(code, name, status, repUser);
@@ -169,6 +166,6 @@ public class TaskDataAccess {
     // CSVデータに書き込むためのフォーマットを作る
     private String createLine(Task task) {
         return task.getCode() + "," + task.getName() + "," + task.getStatus() + ","
-        + task.getRepUser();
+        + task.getRepUser().getCode();
     }
 }

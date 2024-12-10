@@ -15,6 +15,7 @@ public class UserDataAccess {
 
     /**
      * 自動採点用に必要なコンストラクタのため、皆さんはこのコンストラクタを利用・削除はしないでください
+     * 
      * @param filePath
      */
     public UserDataAccess(String filePath) {
@@ -23,7 +24,8 @@ public class UserDataAccess {
 
     /**
      * メールアドレスとパスワードを基にユーザーデータを探します。
-     * @param email メールアドレス
+     * 
+     * @param email    メールアドレス
      * @param password パスワード
      * @return 見つかったユーザー
      */
@@ -36,7 +38,8 @@ public class UserDataAccess {
                 String[] values = line.split(",");
 
                 // メールアドレス、パスワードが一致しなかったらスキップする
-                if (!(values[2].equals(email) && values[3].equals(password))) continue;
+                if (!(values[2].equals(email) && values[3].equals(password)))
+                    continue;
 
                 // メールアドレス、パスワードが一致したらそのデータをUserオブジェクトにマッピング
                 int code = Integer.parseInt(values[0]);
@@ -53,6 +56,7 @@ public class UserDataAccess {
 
     /**
      * コードを基にユーザーデータを取得します。
+     * 
      * @param code 取得するユーザーのコード
      * @return 見つかったユーザー
      */
@@ -64,16 +68,17 @@ public class UserDataAccess {
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",");
 
-            // コードが一致しなかったらスキップする
-            if (Integer.parseInt(values[0]) != code) continue;
+                // コードが一致しなかったらスキップする
+                if (Integer.parseInt(values[0]) != code)
+                    continue;
 
-            // コードが一致したらそのデータをUserオブジェクトにマッピング
-            int userCode = Integer.parseInt(values[0]);
-            String name = values[1];
-            String email = values[2];
-            String password = values[3];
-            user = new User(userCode, name, email, password);
-            break; // 一致するユーザーを見つけたのでループを抜ける
+                // コードが一致したらそのデータをUserオブジェクトにマッピング
+                int userCode = Integer.parseInt(values[0]);
+                String name = values[1];
+                String email = values[2];
+                String password = values[3];
+                user = new User(userCode, name, email, password);
+                break; // 一致するユーザーを見つけたのでループを抜ける
             }
         } catch (IOException e) {
             e.printStackTrace();
